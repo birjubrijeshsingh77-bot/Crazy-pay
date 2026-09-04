@@ -3,127 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CrazyPay - Auth</title>
+  <title>CrazyPay</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-    body {
-      background: #052e16;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
-    }
-    .box {
-      background: #0f5132;
-      border: 1px solid #22c55e;
-      border-radius: 12px;
-      padding: 20px;
-      width: 100%;
-      max-width: 380px;
-      color: #fff;
-    }
-    .title {
-      text-align: center;
-      font-size: 26px;
-      font-weight: bold;
-      color: #4ade80;
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #22c55e;
-      margin-top: 15px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      padding-bottom: 5px;
-    }
-    .input-group {
-      margin-bottom: 12px;
-    }
-    .input-group label {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 4px;
-      color: #cbd5e1;
-    }
-    .input-group input {
-      width: 100%;
-      padding: 10px;
-      background: #14532d;
-      border: 1px solid #22c55e;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
-    .btn {
-      width: 100%;
-      padding: 11px;
-      background: #22c55e;
-      border: none;
-      border-radius: 6px;
-      color: #000;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    .divider {
-      text-align: center;
-      margin: 20px 0 10px 0;
-      color: #aaa;
-      font-size: 13px;
-    }
-    .msg {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: bold;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: #052e16; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; color: #fff; }
+    .card { background: rgba(255, 255, 255, 0.1); border: 1px solid #22c55e; border-radius: 12px; padding: 20px; width: 100%; max-width: 360px; }
+    .title { text-align: center; font-size: 24px; font-weight: bold; color: #4ade80; margin-bottom: 20px; }
+    .section { font-size: 14px; font-weight: bold; color: #22c55e; margin-top: 15px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px; }
+    .input-group { margin-bottom: 10px; }
+    .input-group label { display: block; font-size: 12px; margin-bottom: 4px; color: #ccc; }
+    .input-group input { width: 100%; padding: 10px; background: #14532d; border: 1px solid #22c55e; border-radius: 6px; color: #fff; outline: none; }
+    .btn { width: 100%; padding: 10px; background: #22c55e; border: none; border-radius: 6px; color: #000; font-weight: bold; cursor: pointer; margin-top: 5px; }
+    .divider { text-align: center; margin: 15px 0; color: #888; font-size: 12px; }
+    .msg { margin-top: 15px; text-align: center; font-size: 13px; font-weight: bold; min-height: 18px; }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <div class="title">CRAZYPAY</div>
+  <div class="card">
+    <div class="title">CrazyPay</div>
 
-    <!-- REGISTER SECTION -->
-    <div class="section-title">New User? Register Here</div>
+    <!-- REGISTER -->
+    <div class="section">1. New User? Register</div>
     <div class="input-group">
       <label>Mobile Number</label>
       <input type="text" id="reg-phone" placeholder="Enter Mobile Number">
     </div>
     <div class="input-group">
       <label>Password</label>
-      <input type="password" id="reg-password" placeholder="Create Password">
+      <input type="password" id="reg-pass" placeholder="Create Password">
     </div>
-    <div class="input-group">
-      <label>Invite Code (Optional)</label>
-      <input type="text" id="reg-invite" placeholder="Enter Invite Code">
-    </div>
-    <button class="btn" onclick="doRegister()">REGISTER ACCOUNT</button>
+    <button class="btn" onclick="doRegister()">REGISTER</button>
 
-    <div class="divider">──────── OR ────────</div>
+    <div class="divider">────── OR ──────</div>
 
-    <!-- LOGIN SECTION -->
-    <div class="section-title">Already Registered? Login</div>
+    <!-- LOGIN -->
+    <div class="section">2. Already Registered? Login</div>
     <div class="input-group">
       <label>Mobile Number</label>
-      <input type="text" id="login-phone" placeholder="Enter Mobile Number">
+      <input type="text" id="log-phone" placeholder="Enter Mobile Number">
     </div>
     <div class="input-group">
       <label>Password</label>
-      <input type="password" id="login-password" placeholder="Enter Password">
+      <input type="password" id="log-pass" placeholder="Enter Password">
     </div>
-    <button class="btn" onclick="doLogin()">LOGIN NOW</button>
+    <button class="btn" onclick="doLogin()">LOGIN</button>
 
     <div id="status-msg" class="msg"></div>
   </div>
@@ -136,32 +61,22 @@
 
     async function doRegister() {
       const p = document.getElementById('reg-phone').value.trim();
-      const pass = document.getElementById('reg-password').value.trim();
-      const inv = document.getElementById('reg-invite').value.trim();
+      const pass = document.getElementById('reg-pass').value.trim();
       const msg = document.getElementById('status-msg');
 
       if (!p || !pass) {
         msg.style.color = '#ff4d4d';
-        msg.innerText = 'Please enter Mobile Number and Password for Register!';
+        msg.innerText = 'Mobile & Password required!';
         return;
       }
 
       msg.style.color = '#ffcc00';
       msg.innerText = 'Registering...';
 
-      const { data: existing } = await client.from('users').select('phone').eq('phone', p).maybeSingle();
-      if (existing) {
-        msg.style.color = '#ff4d4d';
-        msg.innerText = 'Mobile number is ALREADY registered!';
-        return;
-      }
-
+      // Strictly insert ONLY phone and password (no extra columns)
       const { error } = await client.from('users').insert([{
         phone: p,
-        password: pass,
-        invite_code: inv,
-        wallet_balance: 0,
-        kyc_status: 'Pending'
+        password: pass
       }]);
 
       if (error) {
@@ -169,18 +84,18 @@
         msg.innerText = 'Error: ' + error.message;
       } else {
         msg.style.color = '#4ade80';
-        msg.innerText = 'Registration SUCCESSFUL! Now scroll down & Login.';
+        msg.innerText = 'Registration Successful! Login below.';
       }
     }
 
     async function doLogin() {
-      const p = document.getElementById('login-phone').value.trim();
-      const pass = document.getElementById('login-password').value.trim();
+      const p = document.getElementById('log-phone').value.trim();
+      const pass = document.getElementById('log-pass').value.trim();
       const msg = document.getElementById('status-msg');
 
       if (!p || !pass) {
         msg.style.color = '#ff4d4d';
-        msg.innerText = 'Please enter Mobile Number and Password for Login!';
+        msg.innerText = 'Enter Mobile & Password!';
         return;
       }
 
@@ -196,7 +111,7 @@
 
       if (error || !data) {
         msg.style.color = '#ff4d4d';
-        msg.innerText = 'Invalid Mobile Number or Password!';
+        msg.innerText = 'Invalid Mobile or Password!';
       } else {
         msg.style.color = '#4ade80';
         msg.innerText = 'Login Successful! Redirecting...';
