@@ -111,7 +111,7 @@
     <div class="title">CrazyPay</div>
 
     <!-- REGISTER SECTION -->
-    <div class="section-title">1. New User? Register First</div>
+    <div class="section-title">New User? Register Here</div>
     <div class="input-group">
       <label>Mobile Number</label>
       <input type="text" id="reg-phone" placeholder="Enter Mobile Number">
@@ -120,16 +120,12 @@
       <label>Password</label>
       <input type="password" id="reg-password" placeholder="Create Password">
     </div>
-    <div class="input-group">
-      <label>Invite Code (Optional)</label>
-      <input type="text" id="reg-invite" placeholder="Enter Invite Code">
-    </div>
     <button class="btn" onclick="doRegister()">REGISTER ACCOUNT</button>
 
     <div class="divider">──────── OR ────────</div>
 
     <!-- LOGIN SECTION -->
-    <div class="section-title">2. Registered? Login Here</div>
+    <div class="section-title">Already Registered? Login</div>
     <div class="input-group">
       <label>Mobile Number</label>
       <input type="text" id="login-phone" placeholder="Enter Mobile Number">
@@ -151,7 +147,6 @@
     async function doRegister() {
       const p = document.getElementById('reg-phone').value.trim();
       const pass = document.getElementById('reg-password').value.trim();
-      const inv = document.getElementById('reg-invite').value.trim();
       const msg = document.getElementById('status-msg');
 
       if (!p || !pass) {
@@ -173,7 +168,6 @@
       const { error } = await client.from('users').insert([{
         phone: p,
         password: pass,
-        invite_code: inv,
         wallet_balance: 0,
         kyc_status: 'Pending'
       }]);
@@ -210,7 +204,7 @@
 
       if (error || !data) {
         msg.style.color = '#ef4444';
-        msg.innerText = 'Invalid Credentials!';
+        msg.innerText = 'Invalid Mobile Number or Password!';
       } else {
         msg.style.color = '#4ade80';
         msg.innerText = 'Login Successful! Redirecting...';
