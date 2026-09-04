@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CrazyPay - Login & Register</title>
-  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * {
@@ -27,20 +26,18 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 16px;
-      padding: 30px;
+      padding: 25px;
       width: 100%;
       max-width: 400px;
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       color: #fff;
-      position: relative;
-      z-index: 10;
     }
     .title {
       text-align: center;
       font-size: 28px;
       font-weight: 700;
       color: #4ade80;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -52,19 +49,17 @@
     .tab-btn {
       flex: 1;
       padding: 12px;
-      background: transparent;
+      background: rgba(255,255,255,0.05);
       border: none;
       color: #aaa;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      outline: none;
-      position: relative;
-      z-index: 20;
+      border-radius: 8px 8px 0 0;
     }
     .tab-btn.active {
-      color: #4ade80;
-      border-bottom: 3px solid #4ade80;
+      color: #000;
+      background: #4ade80;
     }
     .input-group {
       margin-bottom: 15px;
@@ -78,10 +73,11 @@
     .input-group input {
       width: 100%;
       padding: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 8px;
       color: #fff;
+      font-size: 15px;
       outline: none;
     }
     .input-group input:focus {
@@ -98,21 +94,15 @@
       font-size: 16px;
       cursor: pointer;
       margin-top: 10px;
-      transition: 0.3s;
     }
-    .btn:hover {
-      background: #4ade80;
-    }
-    .form-container {
-      display: none;
-    }
-    .form-container.active {
-      display: block;
+    .btn:active {
+      transform: scale(0.98);
     }
     .msg {
       margin-top: 15px;
       text-align: center;
       font-size: 14px;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -122,12 +112,12 @@
     <div class="title">CrazyPay</div>
 
     <div class="tabs">
-      <button id="btn-login-tab" class="tab-btn active" onclick="switchTab('login')">Login</button>
-      <button id="btn-reg-tab" class="tab-btn" onclick="switchTab('register')">Register</button>
+      <button id="tab-login" class="tab-btn active" onclick="showForm('login')">Login</button>
+      <button id="tab-reg" class="tab-btn" onclick="showForm('register')">Register</button>
     </div>
 
     <!-- LOGIN FORM -->
-    <div id="login-form" class="form-container active">
+    <div id="login-section">
       <div class="input-group">
         <label>Phone Number</label>
         <input type="text" id="login-phone" placeholder="Enter Mobile Number">
@@ -140,7 +130,7 @@
     </div>
 
     <!-- REGISTER FORM -->
-    <div id="register-form" class="form-container">
+    <div id="register-section" style="display: none;">
       <div class="input-group">
         <label>Phone Number</label>
         <input type="text" id="reg-phone" placeholder="Enter Mobile Number">
@@ -153,34 +143,33 @@
         <label>Invite Code (Optional)</label>
         <input type="text" id="reg-invite" placeholder="Enter Invite Code">
       </div>
-      <button class="btn" onclick="handleRegister()">Register</button>
+      <button class="btn" onclick="handleRegister()">Register Now</button>
     </div>
 
     <div id="message" class="msg"></div>
   </div>
 
   <script>
-    // Supabase Config
     const SUPABASE_URL = "https://fxzvuqibqkrvdgzeyduq.supabase.co";
     const SUPABASE_KEY = "sb_publishable_c8Hk0984tTqxOJsn_N4ZFQ_T4fAGPLD";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function switchTab(type) {
-      const loginBtn = document.getElementById('btn-login-tab');
-      const regBtn = document.getElementById('btn-reg-tab');
-      const loginForm = document.getElementById('login-form');
-      const regForm = document.getElementById('register-form');
+    function showForm(type) {
+      const loginSec = document.getElementById('login-section');
+      const regSec = document.getElementById('register-section');
+      const loginBtn = document.getElementById('tab-login');
+      const regBtn = document.getElementById('tab-reg');
 
-      if(type === 'login') {
+      if (type === 'login') {
+        loginSec.style.display = 'block';
+        regSec.style.display = 'none';
         loginBtn.classList.add('active');
         regBtn.classList.remove('active');
-        loginForm.classList.add('active');
-        regForm.classList.remove('active');
       } else {
+        loginSec.style.display = 'none';
+        regSec.style.display = 'block';
         regBtn.classList.add('active');
         loginBtn.classList.remove('active');
-        regForm.classList.add('active');
-        loginForm.classList.remove('active');
       }
       document.getElementById('message').innerText = '';
     }
@@ -198,9 +187,8 @@
       }
 
       msg.style.color = '#eab308';
-      msg.innerText = 'Registering...';
+      msg.innerText = 'Registering user...';
 
-      // Check if user exists
       const { data: existingUser } = await supabase
         .from('users')
         .select('phone')
@@ -213,7 +201,6 @@
         return;
       }
 
-      // Register User
       const { error } = await supabase.from('users').insert([{
         phone: phone,
         password: password,
@@ -227,8 +214,8 @@
         msg.innerText = 'Error: ' + error.message;
       } else {
         msg.style.color = '#4ade80';
-        msg.innerText = 'Registration successful! Switching to Login...';
-        setTimeout(() => switchTab('login'), 1500);
+        msg.innerText = 'Registration successful! Switch to Login.';
+        setTimeout(() => showForm('login'), 1500);
       }
     }
 
@@ -255,7 +242,7 @@
 
       if (error || !data) {
         msg.style.color = '#ef4444';
-        msg.innerText = 'Invalid Mobile Number or Password!';
+        msg.innerText = 'Invalid Credentials!';
       } else {
         msg.style.color = '#4ade80';
         msg.innerText = 'Login Successful!';
@@ -268,4 +255,3 @@
   </script>
 </body>
 </html>
-
