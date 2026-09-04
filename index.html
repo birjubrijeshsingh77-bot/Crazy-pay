@@ -3,252 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CrazyPay - Login & Register</title>
+  <title>CrazyPay - Auth</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
     }
     body {
-      background: linear-gradient(135deg, #052e16, #0f5132, #14532d);
+      background: #052e16;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 15px;
     }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      padding: 25px;
+    .box {
+      background: #0f5132;
+      border: 1px solid #22c55e;
+      border-radius: 12px;
+      padding: 20px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      max-width: 380px;
       color: #fff;
     }
     .title {
       text-align: center;
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: bold;
       color: #4ade80;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .tabs {
-      display: flex;
       margin-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      gap: 10px;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #aaa;
+    .section-title {
       font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 8px 8px 0 0;
-      transition: all 0.3s ease;
-    }
-    .tab-btn.active {
-      color: #000;
-      background: #4ade80;
-      font-weight: 700;
+      font-weight: bold;
+      color: #22c55e;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 5px;
     }
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
     .input-group label {
       display: block;
       font-size: 12px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       color: #cbd5e1;
     }
     .input-group input {
       width: 100%;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
+      padding: 10px;
+      background: #14532d;
+      border: 1px solid #22c55e;
+      border-radius: 6px;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
-    }
-    .input-group input:focus {
-      border-color: #4ade80;
     }
     .btn {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       background: #22c55e;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       color: #000;
-      font-weight: 700;
-      font-size: 16px;
+      font-weight: bold;
+      font-size: 15px;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 5px;
     }
-    .btn:active {
-      transform: scale(0.98);
+    .divider {
+      text-align: center;
+      margin: 20px 0 10px 0;
+      color: #aaa;
+      font-size: 13px;
     }
     .msg {
       margin-top: 15px;
       text-align: center;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <div class="glass-card">
-    <div class="title">CrazyPay</div>
+  <div class="box">
+    <div class="title">CRAZYPAY</div>
 
-    <div class="tabs">
-      <button id="tab-login" class="tab-btn active" onclick="showForm('login')">Login</button>
-      <button id="tab-reg" class="tab-btn" onclick="showForm('register')">Register</button>
+    <!-- REGISTER SECTION -->
+    <div class="section-title">New User? Register Here</div>
+    <div class="input-group">
+      <label>Mobile Number</label>
+      <input type="text" id="reg-phone" placeholder="Enter Mobile Number">
     </div>
-
-    <!-- LOGIN FORM -->
-    <div id="login-section">
-      <div class="input-group">
-        <label>Phone Number</label>
-        <input type="text" id="login-phone" placeholder="Enter Mobile Number">
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="Enter Password">
-      </div>
-      <button class="btn" onclick="handleLogin()">Login</button>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="reg-password" placeholder="Create Password">
     </div>
-
-    <!-- REGISTER FORM -->
-    <div id="register-section" style="display: none;">
-      <div class="input-group">
-        <label>Phone Number</label>
-        <input type="text" id="reg-phone" placeholder="Enter Mobile Number">
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="reg-password" placeholder="Enter Password">
-      </div>
-      <div class="input-group">
-        <label>Invite Code (Optional)</label>
-        <input type="text" id="reg-invite" placeholder="Enter Invite Code">
-      </div>
-      <button class="btn" onclick="handleRegister()">Register Now</button>
+    <div class="input-group">
+      <label>Invite Code (Optional)</label>
+      <input type="text" id="reg-invite" placeholder="Enter Invite Code">
     </div>
+    <button class="btn" onclick="doRegister()">REGISTER ACCOUNT</button>
 
-    <div id="message" class="msg"></div>
+    <div class="divider">──────── OR ────────</div>
+
+    <!-- LOGIN SECTION -->
+    <div class="section-title">Already Registered? Login</div>
+    <div class="input-group">
+      <label>Mobile Number</label>
+      <input type="text" id="login-phone" placeholder="Enter Mobile Number">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="Enter Password">
+    </div>
+    <button class="btn" onclick="doLogin()">LOGIN NOW</button>
+
+    <div id="status-msg" class="msg"></div>
   </div>
 
   <script>
-    const SUPABASE_URL = "https://fxzvuqibqkrvdgzeyduq.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_c8Hk0984tTqxOJsn_N4ZFQ_T4fAGPLD";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const client = supabase.createClient(
+      "https://fxzvuqibqkrvdgzeyduq.supabase.co",
+      "sb_publishable_c8Hk0984tTqxOJsn_N4ZFQ_T4fAGPLD"
+    );
 
-    function showForm(type) {
-      const loginSec = document.getElementById('login-section');
-      const regSec = document.getElementById('register-section');
-      const loginBtn = document.getElementById('tab-login');
-      const regBtn = document.getElementById('tab-reg');
+    async function doRegister() {
+      const p = document.getElementById('reg-phone').value.trim();
+      const pass = document.getElementById('reg-password').value.trim();
+      const inv = document.getElementById('reg-invite').value.trim();
+      const msg = document.getElementById('status-msg');
 
-      if (type === 'login') {
-        loginSec.style.display = 'block';
-        regSec.style.display = 'none';
-        loginBtn.classList.add('active');
-        regBtn.classList.remove('active');
-      } else {
-        loginSec.style.display = 'none';
-        regSec.style.display = 'block';
-        regBtn.classList.add('active');
-        loginBtn.classList.remove('active');
-      }
-      document.getElementById('message').innerText = '';
-    }
-
-    async function handleRegister() {
-      const phone = document.getElementById('reg-phone').value.trim();
-      const password = document.getElementById('reg-password').value.trim();
-      const invite_code = document.getElementById('reg-invite').value.trim();
-      const msg = document.getElementById('message');
-
-      if (!phone || !password) {
-        msg.style.color = '#ef4444';
-        msg.innerText = 'Phone and Password required!';
+      if (!p || !pass) {
+        msg.style.color = '#ff4d4d';
+        msg.innerText = 'Please enter Mobile Number and Password for Register!';
         return;
       }
 
-      msg.style.color = '#eab308';
-      msg.innerText = 'Registering user...';
+      msg.style.color = '#ffcc00';
+      msg.innerText = 'Registering...';
 
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('phone')
-        .eq('phone', phone)
-        .maybeSingle();
-
-      if (existingUser) {
-        msg.style.color = '#ef4444';
-        msg.innerText = 'Mobile number already registered!';
+      const { data: existing } = await client.from('users').select('phone').eq('phone', p).maybeSingle();
+      if (existing) {
+        msg.style.color = '#ff4d4d';
+        msg.innerText = 'Mobile number is ALREADY registered!';
         return;
       }
 
-      const { error } = await supabase.from('users').insert([{
-        phone: phone,
-        password: password,
-        invite_code: invite_code,
+      const { error } = await client.from('users').insert([{
+        phone: p,
+        password: pass,
+        invite_code: inv,
         wallet_balance: 0,
         kyc_status: 'Pending'
       }]);
 
       if (error) {
-        msg.style.color = '#ef4444';
+        msg.style.color = '#ff4d4d';
         msg.innerText = 'Error: ' + error.message;
       } else {
         msg.style.color = '#4ade80';
-        msg.innerText = 'Registration successful! Switch to Login.';
-        setTimeout(() => showForm('login'), 1500);
+        msg.innerText = 'Registration SUCCESSFUL! Now scroll down & Login.';
       }
     }
 
-    async function handleLogin() {
-      const phone = document.getElementById('login-phone').value.trim();
-      const password = document.getElementById('login-password').value.trim();
-      const msg = document.getElementById('message');
+    async function doLogin() {
+      const p = document.getElementById('login-phone').value.trim();
+      const pass = document.getElementById('login-password').value.trim();
+      const msg = document.getElementById('status-msg');
 
-      if (!phone || !password) {
-        msg.style.color = '#ef4444';
-        msg.innerText = 'Fill all fields!';
+      if (!p || !pass) {
+        msg.style.color = '#ff4d4d';
+        msg.innerText = 'Please enter Mobile Number and Password for Login!';
         return;
       }
 
-      msg.style.color = '#eab308';
+      msg.style.color = '#ffcc00';
       msg.innerText = 'Logging in...';
 
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('users')
         .select('*')
-        .eq('phone', phone)
-        .eq('password', password)
+        .eq('phone', p)
+        .eq('password', pass)
         .maybeSingle();
 
       if (error || !data) {
-        msg.style.color = '#ef4444';
-        msg.innerText = 'Invalid Credentials!';
+        msg.style.color = '#ff4d4d';
+        msg.innerText = 'Invalid Mobile Number or Password!';
       } else {
         msg.style.color = '#4ade80';
-        msg.innerText = 'Login Successful!';
+        msg.innerText = 'Login Successful! Redirecting...';
         localStorage.setItem('user_phone', data.phone);
         setTimeout(() => {
           window.location.href = 'dashboard.html';
