@@ -73,11 +73,13 @@
       msg.style.color = '#ffcc00';
       msg.innerText = 'Registering...';
 
-      // Strictly insert ONLY phone and password (no extra columns)
-      const { error } = await client.from('users').insert([{
-        phone: p,
+      // Fake email mechanism using phone number to bypass missing password column in custom table
+      const fakeEmail = `${p}@crazypay.com`;
+
+      const { data, error } = await client.auth.signUp({
+        email: fakeEmail,
         password: pass
-      }]);
+      });
 
       if (error) {
         msg.style.color = '#ff4d4d';
@@ -102,20 +104,20 @@
       msg.style.color = '#ffcc00';
       msg.innerText = 'Logging in...';
 
-      const { data, error } = await client
-        .from('users')
-        .select('*')
-        .eq('phone', p)
-        .eq('password', pass)
-        .maybeSingle();
+      const fakeEmail = `${p}@crazypay.com`;
 
-      if (error || !data) {
+      const { data, error } = await client.auth.signInWithPassword({
+        email: fakeEmail,
+        password: pass
+      });
+
+      if (error) {
         msg.style.color = '#ff4d4d';
         msg.innerText = 'Invalid Mobile or Password!';
       } else {
         msg.style.color = '#4ade80';
         msg.innerText = 'Login Successful! Redirecting...';
-        localStorage.setItem('user_phone', data.phone);
+        localStorage.setItem('user_phone', p);
         setTimeout(() => {
           window.location.href = 'dashboard.html';
         }, 1000);
