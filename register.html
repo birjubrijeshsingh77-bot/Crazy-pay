@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrazyPay - Auth</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #052e16, #0f5132, #14532d);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 25px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      color: #fff;
+    }
+    .title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #4ade80;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #4ade80;
+      margin-top: 15px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 6px;
+    }
+    .input-group {
+      margin-bottom: 12px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+      color: #cbd5e1;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 11px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .input-group input:focus {
+      border-color: #4ade80;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #22c55e;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .divider {
+      text-align: center;
+      margin: 22px 0 10px 0;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .msg {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glass-card">
+    <div class="title">CrazyPay</div>
+
+    <!-- REGISTER SECTION -->
+    <div class="section-title">1. New User? Register First</div>
+    <div class="input-group">
+      <label>Mobile Number</label>
+      <input type="text" id="reg-phone" placeholder="Enter Mobile Number">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="reg-password" placeholder="Create Password">
+    </div>
+    <div class="input-group">
+      <label>Invite Code (Optional)</label>
+      <input type="text" id="reg-invite" placeholder="Enter Invite Code">
+    </div>
+    <button class="btn" onclick="doRegister()">REGISTER ACCOUNT</button>
+
+    <div class="divider">──────── OR ────────</div>
+
+    <!-- LOGIN SECTION -->
+    <div class="section-title">2. Registered? Login Here</div>
+    <div class="input-group">
+      <label>Mobile Number</label>
+      <input type="text" id="login-phone" placeholder="Enter Mobile Number">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="Enter Password">
+    </div>
+    <button class="btn" onclick="doLogin()">LOGIN NOW</button>
+
+    <div id="status-msg" class="msg"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://fxzvuqibqkrvdgzeyduq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_c8Hk0984tTqxOJsn_N4ZFQ_T4fAGPLD";
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function doRegister() {
+      const p = document.getElementById('reg-phone').value.trim();
+      const pass = document.getElementById('reg-password').value.trim();
+      const inv = document.getElementById('reg-invite').value.trim();
+      const msg = document.getElementById('status-msg');
+
+      if (!p || !pass) {
+        msg.style.color = '#ef4444';
+        msg.innerText = 'Mobile Number & Password required!';
+        return;
+      }
+
+      msg.style.color = '#eab308';
+      msg.innerText = 'Registering user...';
+
+      const { data: existing } = await client.from('users').select('phone').eq('phone', p).maybeSingle();
+      if (existing) {
+        msg.style.color = '#ef4444';
+        msg.innerText = 'Number already registered! Login below.';
+        return;
+      }
+
+      const { error } = await client.from('users').insert([{
+        phone: p,
+        password: pass,
+        invite_code: inv,
+        wallet_balance: 0,
+        kyc_status: 'Pending'
+      }]);
+
+      if (error) {
+        msg.style.color = '#ef4444';
+        msg.innerText = 'Error: ' + error.message;
+      } else {
+        msg.style.color = '#4ade80';
+        msg.innerText = 'Registration Successful! Now scroll down & Login.';
+      }
+    }
+
+    async function doLogin() {
+      const p = document.getElementById('login-phone').value.trim();
+      const pass = document.getElementById('login-password').value.trim();
+      const msg = document.getElementById('status-msg');
+
+      if (!p || !pass) {
+        msg.style.color = '#ef4444';
+        msg.innerText = 'Enter Mobile Number & Password!';
+        return;
+      }
+
+      msg.style.color = '#eab308';
+      msg.innerText = 'Logging in...';
+
+      const { data, error } = await client
+        .from('users')
+        .select('*')
+        .eq('phone', p)
+        .eq('password', pass)
+        .maybeSingle();
+
+      if (error || !data) {
+        msg.style.color = '#ef4444';
+        msg.innerText = 'Invalid Credentials!';
+      } else {
+        msg.style.color = '#4ade80';
+        msg.innerText = 'Login Successful! Redirecting...';
+        localStorage.setItem('user_phone', data.phone);
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000);
+      }
+    }
+  </script>
+</body>
+</html>
