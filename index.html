@@ -32,6 +32,8 @@
       max-width: 400px;
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       color: #fff;
+      position: relative;
+      z-index: 10;
     }
     .title {
       text-align: center;
@@ -49,17 +51,20 @@
     }
     .tab-btn {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       background: transparent;
       border: none;
       color: #aaa;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
+      outline: none;
+      position: relative;
+      z-index: 20;
     }
     .tab-btn.active {
       color: #4ade80;
-      border-bottom: 2px solid #4ade80;
+      border-bottom: 3px solid #4ade80;
     }
     .input-group {
       margin-bottom: 15px;
@@ -117,8 +122,8 @@
     <div class="title">CrazyPay</div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+      <button id="btn-login-tab" class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button id="btn-reg-tab" class="tab-btn" onclick="switchTab('register')">Register</button>
     </div>
 
     <!-- LOGIN FORM -->
@@ -161,15 +166,21 @@
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     function switchTab(type) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
-      
+      const loginBtn = document.getElementById('btn-login-tab');
+      const regBtn = document.getElementById('btn-reg-tab');
+      const loginForm = document.getElementById('login-form');
+      const regForm = document.getElementById('register-form');
+
       if(type === 'login') {
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('login-form').classList.add('active');
+        loginBtn.classList.add('active');
+        regBtn.classList.remove('active');
+        loginForm.classList.add('active');
+        regForm.classList.remove('active');
       } else {
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('register-form').classList.add('active');
+        regBtn.classList.add('active');
+        loginBtn.classList.remove('active');
+        regForm.classList.add('active');
+        loginForm.classList.remove('active');
       }
       document.getElementById('message').innerText = '';
     }
@@ -186,12 +197,15 @@
         return;
       }
 
+      msg.style.color = '#eab308';
+      msg.innerText = 'Registering...';
+
       // Check if user exists
       const { data: existingUser } = await supabase
         .from('users')
         .select('phone')
         .eq('phone', phone)
-        .single();
+        .maybeSingle();
 
       if (existingUser) {
         msg.style.color = '#ef4444';
@@ -229,12 +243,15 @@
         return;
       }
 
+      msg.style.color = '#eab308';
+      msg.innerText = 'Logging in...';
+
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('phone', phone)
         .eq('password', password)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         msg.style.color = '#ef4444';
@@ -251,3 +268,4 @@
   </script>
 </body>
 </html>
+
