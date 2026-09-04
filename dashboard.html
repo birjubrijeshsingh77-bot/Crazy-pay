@@ -3,138 +3,242 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CrazyPay - Dashboard</title>
+  <title>CrazyPay App</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #022c22; color: #fff; padding-bottom: 80px; min-height: 100vh; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #0b132b; color: #fff; padding-bottom: 75px; min-height: 100vh; }
     
-    /* Header */
-    .header { background: #064e3b; padding: 20px; border-bottom: 2px solid #22c55e; display: flex; justify-content: space-between; align-items: center; }
-    .brand { font-size: 22px; font-weight: bold; color: #4ade80; }
-    .user-info { font-size: 13px; color: #a7f3d0; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; }
+    /* Top Bar */
+    .top-bar { background: #1c2541; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3a506b; }
+    .logo { font-size: 20px; font-weight: bold; color: #4ade80; }
+    .user-badge { font-size: 12px; background: #3a506b; padding: 4px 10px; border-radius: 12px; color: #5bc0be; }
 
     .container { padding: 15px; max-width: 480px; margin: 0 auto; }
 
-    /* Balance Card */
-    .wallet-card { background: linear-gradient(135deg, #059669, #10b981); border-radius: 16px; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; text-align: center; }
-    .wallet-title { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #d1fae5; }
-    .balance { font-size: 32px; font-weight: bold; margin: 10px 0; color: #ffffff; }
-    .quick-actions { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
-    .action-btn { background: #022c22; color: #4ade80; border: 1px solid #22c55e; padding: 8px 18px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; flex: 1; }
+    /* Main Balance Card */
+    .balance-card { background: linear-gradient(135deg, #1c2541, #3a506b); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #5bc0be; margin-bottom: 20px; }
+    .bal-title { font-size: 13px; color: #a7f3d0; text-transform: uppercase; }
+    .bal-amount { font-size: 34px; font-weight: bold; color: #fff; margin: 8px 0; }
+    .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+    .main-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn-recharge { background: #22c55e; color: #000; }
+    .btn-withdraw { background: #ef4444; color: #fff; }
 
-    /* Section Title */
-    .section-title { font-size: 16px; font-weight: bold; color: #4ade80; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; }
+    /* Page Views */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
 
-    /* Investment Plans */
-    .plan-card { background: #064e3b; border: 1px solid #10b981; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .plan-info h4 { color: #fff; font-size: 16px; margin-bottom: 4px; }
-    .plan-info p { color: #a7f3d0; font-size: 12px; margin-bottom: 2px; }
-    .plan-price { font-size: 18px; font-weight: bold; color: #4ade80; }
-    .buy-btn { background: #22c55e; color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+    /* Plan Cards */
+    .card { background: #1c2541; border: 1px solid #3a506b; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+    .card-title { font-size: 16px; color: #4ade80; font-weight: bold; margin-bottom: 8px; }
+    .card-detail { font-size: 13px; color: #ccc; margin-bottom: 4px; }
+    .card-flex { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .price { font-size: 20px; font-weight: bold; color: #fff; }
+    .action-btn { background: #4ade80; color: #000; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-    /* Transactions */
-    .tx-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 13px; }
-    .tx-type { color: #a7f3d0; font-weight: bold; }
-    .tx-amount { color: #4ade80; font-weight: bold; }
+    /* Modal / Popups */
+    .modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 999; }
+    .modal-content { background: #1c2541; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; border: 1px solid #5bc0be; }
+    .modal-content h3 { color: #4ade80; margin-bottom: 15px; }
+    .modal-content input { width: 100%; padding: 10px; margin: 8px 0; background: #0b132b; border: 1px solid #3a506b; color: #fff; border-radius: 6px; outline: none; }
 
-    /* Bottom Navigation */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #064e3b; border-top: 1px solid #10b981; display: flex; justify-content: space-around; padding: 10px 0; }
-    .nav-item { text-align: center; color: #a7f3d0; font-size: 11px; text-decoration: none; }
-    .nav-item.active { color: #4ade80; font-weight: bold; }
+    /* Bottom Nav */
+    .nav-bar { position: fixed; bottom: 0; left:0; right:0; background: #1c2541; border-top: 1px solid #3a506b; display: flex; justify-content: space-around; padding: 10px 0; }
+    .nav-btn { background: none; border: none; color: #8892b0; font-size: 11px; cursor: pointer; text-align: center; }
+    .nav-btn.active { color: #4ade80; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="brand">CrazyPay</div>
-    <div class="user-info">📱 Demo User</div>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo">CrazyPay</div>
+    <div class="user-badge" id="display-phone">📱 +91 7289034924</div>
   </div>
 
   <div class="container">
-    
-    <!-- Balance Card -->
-    <div class="wallet-card">
-      <div class="wallet-title">Wallet Balance</div>
-      <div class="balance">₹ 1,250.00</div>
-      <div class="quick-actions">
-        <button class="action-btn" onclick="alert('Deposit Feature Clicked!')">+ Recharge</button>
-        <button class="action-btn" onclick="alert('Withdrawal Feature Clicked!')">↑ Withdraw</button>
+    <!-- Wallet Card -->
+    <div class="balance-card">
+      <div class="bal-title">Total Wallet Balance</div>
+      <div class="bal-amount">₹ <span id="wallet-bal">1000</span>.00</div>
+      <div class="btn-group">
+        <button class="main-btn btn-recharge" onclick="openModal('recharge-modal')">+ Recharge</button>
+        <button class="main-btn btn-withdraw" onclick="openModal('withdraw-modal')">↑ Withdraw</button>
       </div>
     </div>
 
-    <!-- Investment Plans -->
-    <div class="section-title">
-      <span>🔥 Investment Plans</span>
-    </div>
+    <!-- 1. HOME / PLANS PAGE -->
+    <div id="page-home" class="page-section active">
+      <h3 style="color:#4ade80; margin-bottom:12px;">🔥 VIP Investment Plans</h3>
+      
+      <div class="card">
+        <div class="card-title">Starter Plan VIP-1</div>
+        <div class="card-detail">Daily Profit: <b>₹ 120.00</b></div>
+        <div class="card-detail">Validity: <b>30 Days</b></div>
+        <div class="card-flex">
+          <div class="price">₹ 500</div>
+          <button class="action-btn" onclick="buyPlan(500, 120, 'VIP-1')">Invest Now</button>
+        </div>
+      </div>
 
-    <div class="plan-card">
-      <div class="plan-info">
-        <h4>VIP Plan 1</h4>
-        <p>Daily Income: ₹100</p>
-        <p>Validity: 30 Days</p>
-      </div>
-      <div>
-        <div class="plan-price" style="margin-bottom:6px;">₹ 500</div>
-        <button class="buy-btn" onclick="alert('Investing in VIP Plan 1')">Invest</button>
-      </div>
-    </div>
-
-    <div class="plan-card">
-      <div class="plan-info">
-        <h4>VIP Plan 2</h4>
-        <p>Daily Income: ₹250</p>
-        <p>Validity: 30 Days</p>
-      </div>
-      <div>
-        <div class="plan-price" style="margin-bottom:6px;">₹ 1,000</div>
-        <button class="buy-btn" onclick="alert('Investing in VIP Plan 2')">Invest</button>
+      <div class="card">
+        <div class="card-title">Pro Plan VIP-2</div>
+        <div class="card-detail">Daily Profit: <b>₹ 350.00</b></div>
+        <div class="card-detail">Validity: <b>30 Days</b></div>
+        <div class="card-flex">
+          <div class="price">₹ 1,200</div>
+          <button class="action-btn" onclick="buyPlan(1200, 350, 'VIP-2')">Invest Now</button>
+        </div>
       </div>
     </div>
 
-    <div class="plan-card">
-      <div class="plan-info">
-        <h4>VIP Plan 3</h4>
-        <p>Daily Income: ₹650</p>
-        <p>Validity: 30 Days</p>
-      </div>
-      <div>
-        <div class="plan-price" style="margin-bottom:6px;">₹ 2,500</div>
-        <button class="buy-btn" onclick="alert('Investing in VIP Plan 3')">Invest</button>
+    <!-- 2. MY INVESTMENTS PAGE -->
+    <div id="page-myplans" class="page-section">
+      <h3 style="color:#4ade80; margin-bottom:12px;">📈 My Active Plans</h3>
+      <div id="active-plans-list">
+        <p style="color:#aaa; font-size:13px;">No active plans yet. Purchase a plan from Home.</p>
       </div>
     </div>
 
-    <!-- Recent History -->
-    <div class="section-title">
-      <span>📜 Recent Activity</span>
-    </div>
-
-    <div class="tx-item">
-      <div>
-        <div class="tx-type">Daily Return Added</div>
-        <div style="font-size:10px; color:#aaa;">Today, 09:00 AM</div>
+    <!-- 3. TEAM PAGE -->
+    <div id="page-team" class="page-section">
+      <h3 style="color:#4ade80; margin-bottom:12px;">👥 Referral & Team</h3>
+      <div class="card">
+        <div class="card-title">Your Invite Link</div>
+        <input type="text" id="ref-link" readonly value="https://crazypay.com/signup?ref=7289034924" style="width:100%; padding:8px; background:#0b132b; color:#fff; border:1px solid #3a506b; margin:8px 0; border-radius:6px;">
+        <button class="action-btn" style="width:100%;" onclick="copyRefLink()">Copy Link</button>
       </div>
-      <div class="tx-amount">+ ₹100.00</div>
-    </div>
-
-    <div class="tx-item">
-      <div>
-        <div class="tx-type">Plan Purchased (VIP 1)</div>
-        <div style="font-size:10px; color:#aaa;">Yesterday</div>
+      <div class="card">
+        <div class="card-detail">Level 1 Members: <b>0</b></div>
+        <div class="card-detail">Total Team Income: <b>₹ 0.00</b></div>
       </div>
-      <div class="tx-amount" style="color:#f87171;">- ₹500.00</div>
     </div>
 
+    <!-- 4. PROFILE PAGE -->
+    <div id="page-profile" class="page-section">
+      <h3 style="color:#4ade80; margin-bottom:12px;">👤 Account Settings</h3>
+      <div class="card">
+        <div class="card-detail">Mobile: <b id="prof-phone">7289034924</b></div>
+        <div class="card-detail" style="margin-top:8px;">Bank Account: <b id="prof-bank">Not Bound</b></div>
+        <button class="action-btn" style="margin-top:12px; background:#ef4444; color:#fff;" onclick="alert('Logged Out!'); window.location.href='index.html';">Logout</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Navigation Bar -->
-  <div class="bottom-nav">
-    <a href="#" class="nav-item active">🏠<br>Home</a>
-    <a href="#" class="nav-item" onclick="alert('Plans Tab')">📈<br>Plans</a>
-    <a href="#" class="nav-item" onclick="alert('Team Tab')">👥<br>Team</a>
-    <a href="#" class="nav-item" onclick="alert('Profile Tab')">👤<br>Profile</a>
+  <!-- RECHARGE MODAL -->
+  <div id="recharge-modal" class="modal">
+    <div class="modal-content">
+      <h3>Deposit Funds</h3>
+      <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Pay to UPI ID: <b>crazypay@upi</b></p>
+      <input type="number" id="rech-amount" placeholder="Enter Amount (Min ₹200)">
+      <input type="text" id="rech-utr" placeholder="Enter 12 Digit UTR / Txn ID">
+      <button class="action-btn" style="width:100%; margin-top:10px;" onclick="submitRecharge()">Submit Payment</button>
+      <button class="action-btn" style="width:100%; margin-top:6px; background:#3a506b; color:#fff;" onclick="closeModal('recharge-modal')">Close</button>
+    </div>
   </div>
 
+  <!-- WITHDRAW MODAL -->
+  <div id="withdraw-modal" class="modal">
+    <div class="modal-content">
+      <h3>Withdraw Money</h3>
+      <input type="number" id="with-amount" placeholder="Enter Amount">
+      <input type="text" id="with-upi" placeholder="Enter UPI ID / Bank A/C">
+      <button class="action-btn" style="width:100%; margin-top:10px; background:#ef4444; color:#fff;" onclick="submitWithdrawal()">Request Withdrawal</button>
+      <button class="action-btn" style="width:100%; margin-top:6px; background:#3a506b; color:#fff;" onclick="closeModal('withdraw-modal')">Close</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="nav-bar">
+    <button class="nav-btn active" onclick="switchPage('home', this)">🏠<br>Home</button>
+    <button class="nav-btn" onclick="switchPage('myplans', this)">📈<br>My Plans</button>
+    <button class="nav-btn" onclick="switchPage('team', this)">👥<br>Team</button>
+    <button class="nav-btn" onclick="switchPage('profile', this)">👤<br>Profile</button>
+  </div>
+
+  <script>
+    // System State Management
+    let balance = parseInt(localStorage.getItem('cp_balance')) || 1000;
+    let activePlans = JSON.parse(localStorage.getItem('cp_plans')) || [];
+
+    document.getElementById('wallet-bal').innerText = balance;
+    renderPlans();
+
+    function updateBal(newBal) {
+      balance = newBal;
+      localStorage.setItem('cp_balance', balance);
+      document.getElementById('wallet-bal').innerText = balance;
+    }
+
+    function switchPage(pageId, btn) {
+      document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('page-' + pageId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // Invest Logic
+    function buyPlan(price, daily, name) {
+      if (balance < price) {
+        alert("Insufficient balance! Please recharge first.");
+        openModal('recharge-modal');
+        return;
+      }
+      updateBal(balance - price);
+      activePlans.push({ name: name, daily: daily, date: new Date().toLocaleDateString() });
+      localStorage.setItem('cp_plans', JSON.stringify(activePlans));
+      renderPlans();
+      alert(`Success! Purchased ${name}. Daily Return ₹${daily} added.`);
+    }
+
+    function renderPlans() {
+      const container = document.getElementById('active-plans-list');
+      if (activePlans.length === 0) return;
+      container.innerHTML = activePlans.map(p => `
+        <div class="card">
+          <div class="card-title">${p.name} (Active)</div>
+          <div class="card-detail">Daily Earning: <b>₹ ${p.daily}.00</b></div>
+          <div class="card-detail">Purchased On: ${p.date}</div>
+        </div>
+      `).join('');
+    }
+
+    // Recharge Logic
+    function submitRecharge() {
+      const amt = parseInt(document.getElementById('rech-amount').value);
+      const utr = document.getElementById('rech-utr').value.trim();
+      if (!amt || amt < 200 || utr.length < 6) {
+        alert("Enter valid amount (Min ₹200) & UTR!");
+        return;
+      }
+      updateBal(balance + amt);
+      alert(`Recharge Successful! ₹${amt} added to wallet.`);
+      closeModal('recharge-modal');
+    }
+
+    // Withdrawal Logic
+    function submitWithdrawal() {
+      const amt = parseInt(document.getElementById('with-amount').value);
+      const upi = document.getElementById('with-upi').value.trim();
+      if (!amt || amt > balance || !upi) {
+        alert("Invalid amount or insufficient wallet balance!");
+        return;
+      }
+      updateBal(balance - amt);
+      document.getElementById('prof-bank').innerText = upi;
+      alert(`Withdrawal request of ₹${amt} submitted successfully!`);
+      closeModal('withdraw-modal');
+    }
+
+    function copyRefLink() {
+      const link = document.getElementById('ref-link');
+      link.select();
+      document.execCommand('copy');
+      alert('Invite link copied!');
+    }
+  </script>
 </body>
 </html>
-
